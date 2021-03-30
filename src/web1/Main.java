@@ -7,9 +7,8 @@
 package web1;
 
 import javafx.application.Application;
-import web1.wiew.Window;
+import web1.view.Window;
 
-import static javafx.application.Application.launch;
 
 public class Main {
   public static void main(String[] args) {

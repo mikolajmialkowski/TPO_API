@@ -1,6 +1,5 @@
 package web1.view;
 
-
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -13,10 +12,33 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
-
+import web1.Service;
 
 
 public class Window extends Application {
+
+    public static  Window instance;
+    public int dupa =10;
+
+    public Window(){
+        instance = this;
+    }
+
+    public synchronized static Window getInstance() throws InterruptedException {
+        if (instance == null) {
+            new Thread() {
+                @Override
+                public void run() {
+                    javafx.application.Application.launch(Window.class);
+                }
+            }.start();
+            while (instance==null)
+                Thread.sleep(100);
+        }
+        return instance;
+    }
+
+    Service service;
 
     Scene countryAndCityScene;
     Scene displayInfoScene;

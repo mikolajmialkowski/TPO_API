@@ -19,9 +19,8 @@ public class Main {
     System.out.println("Country: "+ s.getCountryLocale().getDisplayCountry()+
             "\nCity: "+ s.getCity() +
             "\nWeather: "+ weatherJson+
-            "\n"+ rate1 +
-            "\n"+ rate2 );
-
+            "\nrate 1: "+ s.getCurrencyExchange().getCurrency().get("rates") +
+            "\nrate 2: "+ rate2 );
 
     try {
       Window window = Window.getInstance();

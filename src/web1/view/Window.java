@@ -121,20 +121,29 @@ public class Window extends Application {
 
         //CurrencyTextFiled
         TextField currencyTextFiled = new TextField("USD");
-        //currencyTextFiled.setPromptText("USD");
         GridPane.setConstraints(currencyTextFiled,1,1);
 
-        //CheckExchangeRateButton
-        Button checkExchangeRateButton = new Button("Check exchange rate");
-        GridPane.setConstraints(checkExchangeRateButton,2,1);
-
         //ExchangeRateInfoLabel
-        Label exchangeRateInfoLabel = new Label("test");
+        Label exchangeRateInfoLabel = new Label("###");
         GridPane.setConstraints(exchangeRateInfoLabel,3,1);
 
         //NBPExchangeLabel
-        Label NBPExchangeLabel = new Label("NBP zloty exchange rate: ");
+        Label NBPExchangeLabel = new Label("NBP zloty exchange rate: "+ service.getNBPRate());
         GridPane.setConstraints(NBPExchangeLabel,0,2);
+
+        //CheckExchangeRateButton
+        Button checkExchangeRateButton = new Button("Check exchange rate");
+        checkExchangeRateButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                service.getRateFor(currencyTextFiled.getText());
+                exchangeRateInfoLabel.setText(service.getCurrencyExchange().getCurrency().get("rates").toString());
+
+            }
+        });
+        GridPane.setConstraints(checkExchangeRateButton,2,1);
+
+
 
         //Web View & Engine
         WebView webView = new WebView();
@@ -145,8 +154,11 @@ public class Window extends Application {
         webEngine.load("https://en.wikipedia.org/wiki/"+this.service.getCity());
 
         displayInfoGridPane.getChildren().addAll(weatherLabel,currencyLabel,currencyTextFiled,checkExchangeRateButton,exchangeRateInfoLabel,NBPExchangeLabel,webView);
-        displayInfoScene = new Scene(displayInfoGridPane,600,480);
+        displayInfoScene = new Scene(displayInfoGridPane,650,480);
+
+        primaryStage.setTitle("Chek information for "+service.getCity()+", "+service.getCountryLocale().getDisplayCountry());
         primaryStage.setMinHeight(480);
+        primaryStage.setMinWidth(650);
 
     }
 

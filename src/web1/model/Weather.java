@@ -1,4 +1,4 @@
-package web1;
+package web1.model;
 
 import java.util.Map;
 

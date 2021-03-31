@@ -8,16 +8,17 @@ package web1;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import web1.model.CurrencyExchange;
+import web1.model.Weather;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class Service {
@@ -25,6 +26,8 @@ public class Service {
    private Locale countryLocale;
    private String city;
    private Weather weather;
+   private CurrencyExchange currencyExchange;
+   private double NBPrate;
 
     public Locale getCountryLocale() {
         return countryLocale;
@@ -36,6 +39,14 @@ public class Service {
 
     public Weather getWeather() {
         return weather;
+    }
+
+    public CurrencyExchange getCurrencyExchange() {
+        return currencyExchange;
+    }
+
+    public double getNBPrate() {
+        return NBPrate;
     }
 
     public Service(String countryName) {
@@ -50,7 +61,6 @@ public class Service {
 
     public synchronized String getWeather(String city) {
         this.city = city;
-        System.out.println("CITY = " + this.city);
         String weatherJSON="";
         try {
             weatherJSON = (getJSON(new URL("https://api.openweathermap.org/data/2.5/weather?q=" + city + "," + this.countryLocale.getCountry().toLowerCase()
@@ -65,12 +75,49 @@ public class Service {
         return weatherJSON;
     }
 
-    public Double getRateFor(String usd) {
-        return 21.37;
+
+    public Double getRateFor(String rate1) {
+        try {
+            String rate1JSON = getJSON(new URL("https://api.exchangeratesapi.io/latest?base=" + rate1 + "&symbols=" +  Currency.getInstance(countryLocale)));
+            Map<String,Object> JSONmap = JSONToMap(rate1JSON);
+            JSONmap.put("reference",Currency.getInstance(countryLocale));
+            this.currencyExchange = new CurrencyExchange(JSONmap);
+
+            Matcher matcher = Pattern.compile("\\d+\\.\\d+").matcher(currencyExchange.getCurrency().get("rates").toString());
+
+            if (matcher.find()){
+                getCurrencyExchange().getCurrency().put("rates",matcher.group(0));
+                return Double.parseDouble(matcher.group(0));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return 0d;
     }
 
+
+
     public Double getNBPRate() {
-        return 420d;
+        try {
+            if (Currency.getInstance(countryLocale).toString().equals("PLN")){
+                this.NBPrate = 1d;
+                return 1d;
+            }
+            String rate = getJSON(new URL("http://api.nbp.pl/api/exchangerates/rates/a/"+ Currency.getInstance(countryLocale).toString().toLowerCase()+"/"));
+            Map<String,Object> JSONMap = JSONToMap(rate);
+            List<String> list = (List<String>) JSONMap.get("rates");
+
+            Matcher matcher = Pattern.compile("\\d+\\.\\d+").matcher(list.toString());
+
+            if (matcher.find()) {
+                this.NBPrate = Double.parseDouble(matcher.group(0));
+                return NBPrate;
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return 0d;
     }
 
     protected synchronized String getJSON(URL url) throws IOException {

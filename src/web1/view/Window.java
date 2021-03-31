@@ -9,16 +9,22 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import web1.Service;
 
+import java.awt.*;
+
 
 public class Window extends Application {
 
     public static  Window instance;
-    public int dupa =10;
+    public Service service;
+    public Scene countryAndCityScene; // #1
+    public Scene displayInfoScene;  //#2
 
     public Window(){
         instance = this;
@@ -38,12 +44,6 @@ public class Window extends Application {
         return instance;
     }
 
-    public Service service;
-
-    Scene countryAndCityScene;
-    Scene displayInfoScene;
-
-
     @Override
     public void start(Stage primaryStage) throws Exception {
 
@@ -53,6 +53,12 @@ public class Window extends Application {
         primaryStage.show();
         primaryStage.centerOnScreen();
 
+        initializeCountryCityScene(primaryStage);
+        primaryStage.setScene(countryAndCityScene);
+
+    }
+
+    public void initializeCountryCityScene(Stage primaryStage){
         GridPane countryCityGridPane = new GridPane(); // layout?
         countryCityGridPane.setPadding(new Insets(10,10,10,10));
         countryCityGridPane.setVgap(10);
@@ -79,24 +85,34 @@ public class Window extends Application {
         GridPane.setConstraints(getInfoButton,1,2);
         getInfoButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
-            public void handle(ActionEvent actionEvent) {
+            public synchronized void handle(ActionEvent actionEvent) {
+                service = new Service(countryTextFiled.getText());
+                service.getWeather(cityTextFiled.getText());
+                initializeDisplayInfoScene(primaryStage);
                 primaryStage.setScene(displayInfoScene);
+
             }
         });
 
         countryCityGridPane.getChildren().addAll(countryLabel,countryTextFiled,cityLabel,cityTextFiled,getInfoButton);
         countryAndCityScene = new Scene(countryCityGridPane, 300,200);
+    }
 
-        primaryStage.setScene(countryAndCityScene);
+    public void initializeDisplayInfoScene(Stage primaryStage){
 
         GridPane displayInfoGridPane = new GridPane();
         displayInfoGridPane.setPadding(new Insets(10,10,10,10));
         displayInfoGridPane.setVgap(10);
         displayInfoGridPane.setHgap(10);
 
-
         //WeatherLabel
-        Label weatherLabel = new Label("Current Temperature in "+  " : ");
+        Label weatherLabel = new Label("Current weather in "+
+                service.getCity()+ " : \n"+
+                service.getWeather().getMainMap().get("temp")+"°C, "+
+                service.getWeather().getWeather().get("description")+ ", "+
+                service.getWeather().getMainMap().get("pressure")+"hPa, "+
+                service.getWeather().getWindMap().get("speed")+" m/s");
+        weatherLabel.setStyle("-fx-font-weight: bold");
         GridPane.setConstraints(weatherLabel,0,0);
 
         //CurrencyLabel
@@ -129,7 +145,8 @@ public class Window extends Application {
         webEngine.load("https://en.wikipedia.org/wiki/"+this.service.getCity());
 
         displayInfoGridPane.getChildren().addAll(weatherLabel,currencyLabel,currencyTextFiled,checkExchangeRateButton,exchangeRateInfoLabel,NBPExchangeLabel,webView);
-        displayInfoScene = new Scene(displayInfoGridPane,600,400);
+        displayInfoScene = new Scene(displayInfoGridPane,600,480);
+        primaryStage.setMinHeight(480);
 
     }
 

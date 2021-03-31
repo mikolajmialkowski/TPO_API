@@ -6,17 +6,25 @@
 
 package web1;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+
 
 public class Service {
 
    private Locale countryLocale;
    private String city;
+   private Weather weather;
 
     public Locale getCountryLocale() {
         return countryLocale;
@@ -24,6 +32,10 @@ public class Service {
 
     public String getCity() {
         return city;
+    }
+
+    public Weather getWeather() {
+        return weather;
     }
 
     public Service(String countryName) {
@@ -36,15 +48,21 @@ public class Service {
             countryLocale = new Locale("","United States"); // as default
     }
 
-    public String getWeather(String city) {
+    public synchronized String getWeather(String city) {
         this.city = city;
+        System.out.println("CITY = " + this.city);
+        String weatherJSON="";
         try {
-            return (getJSON(new URL("https://api.openweathermap.org/data/2.5/weather?q=" + city + "," + this.countryLocale.getCountry().toLowerCase()
+            weatherJSON = (getJSON(new URL("https://api.openweathermap.org/data/2.5/weather?q=" + city + "," + this.countryLocale.getCountry().toLowerCase()
             + "&appid=2fda8ac465c2e4111e5c9bfab208267b&units=metric"))); // in Celsius
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return "JSON - NULL";
+        Map<String, Object> JSONmap = JSONToMap(weatherJSON);
+        List<Map<String, Object >> weatherList = (List<Map<String, Object>>) (JSONmap.get("weather"));
+        this.weather = new Weather(weatherList.get(0),(Map<String, Object >)JSONmap.get("main"),(Map<String, Object >)JSONmap.get("wind"));
+
+        return weatherJSON;
     }
 
     public Double getRateFor(String usd) {
@@ -55,7 +73,7 @@ public class Service {
         return 420d;
     }
 
-    protected String getJSON(URL url) throws IOException {
+    protected synchronized String getJSON(URL url) throws IOException {
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(url.openStream(), StandardCharsets.UTF_8));
         StringBuilder JSONstringBuilder = new StringBuilder();
         String tmp = bufferedReader.readLine();
@@ -65,4 +83,12 @@ public class Service {
         }
         return JSONstringBuilder.toString();
     }
+
+    public static Map<String,Object> JSONToMap(String str) {
+
+        Map<String, Object> map = new Gson().fromJson(str, new TypeToken<HashMap<String, Object>>() {
+        }.getType());
+        return map;
+    }
+
 }

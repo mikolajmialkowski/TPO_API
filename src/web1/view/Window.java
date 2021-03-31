@@ -32,13 +32,13 @@ public class Window extends Application {
                     javafx.application.Application.launch(Window.class);
                 }
             }.start();
-            while (instance==null)
+            while (instance==null) //wait until instance of Window is created by Application Builder
                 Thread.sleep(100);
         }
         return instance;
     }
 
-    Service service;
+    public Service service;
 
     Scene countryAndCityScene;
     Scene displayInfoScene;
@@ -63,7 +63,7 @@ public class Window extends Application {
         GridPane.setConstraints(countryLabel,0,0);
 
         //CountryTextFiled
-        TextField countryTextFiled = new TextField("polzga?");
+        TextField countryTextFiled = new TextField(service.getCountryLocale().getDisplayCountry());
         GridPane.setConstraints(countryTextFiled,1,0);
 
         //CityLabel
@@ -71,7 +71,7 @@ public class Window extends Application {
         GridPane.setConstraints(cityLabel,0,1);
 
         //CityTextFiled
-        TextField cityTextFiled = new TextField("warszawka?");
+        TextField cityTextFiled = new TextField(service.getCity());
         GridPane.setConstraints(cityTextFiled,1,1);
 
         //APIButton
@@ -96,7 +96,7 @@ public class Window extends Application {
 
 
         //WeatherLabel
-        Label weatherLabel = new Label("Current Temperature in "+ " : ");
+        Label weatherLabel = new Label("Current Temperature in "+  " : ");
         GridPane.setConstraints(weatherLabel,0,0);
 
         //CurrencyLabel
@@ -120,18 +120,20 @@ public class Window extends Application {
         Label NBPExchangeLabel = new Label("NBP zloty exchange rate: ");
         GridPane.setConstraints(NBPExchangeLabel,0,2);
 
-
         //Web View & Engine
         WebView webView = new WebView();
         webView.setMaxHeight(300);
         webView.setMaxWidth(200);
         WebEngine webEngine = webView.getEngine();
         GridPane.setConstraints(webView,0,4);
-        webEngine.load("https://en.wikipedia.org/wiki/Main_Page");
-
+        webEngine.load("https://en.wikipedia.org/wiki/"+this.service.getCity());
 
         displayInfoGridPane.getChildren().addAll(weatherLabel,currencyLabel,currencyTextFiled,checkExchangeRateButton,exchangeRateInfoLabel,NBPExchangeLabel,webView);
         displayInfoScene = new Scene(displayInfoGridPane,600,400);
 
+    }
+
+    public void setService(Service service){
+        this.service = service;
     }
 }

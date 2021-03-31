@@ -16,17 +16,20 @@ public class Main {
     Double rate1 = s.getRateFor("USD");
     Double rate2 = s.getNBPRate();
 
+    System.out.println("Country: "+ s.getCountryLocale().getDisplayCountry()+
+            "\nCity: "+ s.getCity() +
+            "\nWeather: "+ weatherJson+
+            "\n"+ rate1 +
+            "\n"+ rate2 );
+
 
     try {
       Window window = Window.getInstance();
-      System.out.println(window.dupa);
+      window.setService(s);
 
     } catch (InterruptedException e) {
       e.printStackTrace();
     }
 
-
-    // ...
-    // część uruchamiająca GUI
   }
 }

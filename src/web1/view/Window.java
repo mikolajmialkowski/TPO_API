@@ -9,22 +9,17 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
-import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import web1.Service;
 
-import java.awt.*;
-
-
 public class Window extends Application {
 
     public static  Window instance;
     public Service service;
-    public Scene countryAndCityScene; // #1
-    public Scene displayInfoScene;  //#2
+    public Scene countryAndCityScene; //welcome window
+    public Scene displayInfoScene;  //info window
 
     public Window(){
         instance = this;
@@ -46,16 +41,14 @@ public class Window extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-
         primaryStage.setTitle("Pass Country & City");
         primaryStage.setMinHeight(200);
         primaryStage.setMinWidth(200);
-        primaryStage.show();
         primaryStage.centerOnScreen();
+        primaryStage.show();
 
         initializeCountryCityScene(primaryStage);
         primaryStage.setScene(countryAndCityScene);
-
     }
 
     public void initializeCountryCityScene(Stage primaryStage){
@@ -99,6 +92,9 @@ public class Window extends Application {
     }
 
     public void initializeDisplayInfoScene(Stage primaryStage){
+        primaryStage.setTitle("Chek information for "+service.getCity()+", "+service.getCountryLocale().getDisplayCountry());
+        primaryStage.setMinHeight(480);
+        primaryStage.setMinWidth(650);
 
         GridPane displayInfoGridPane = new GridPane();
         displayInfoGridPane.setPadding(new Insets(10,10,10,10));
@@ -133,6 +129,7 @@ public class Window extends Application {
 
         //CheckExchangeRateButton
         Button checkExchangeRateButton = new Button("Check exchange rate");
+        GridPane.setConstraints(checkExchangeRateButton,2,1);
         checkExchangeRateButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
@@ -141,9 +138,6 @@ public class Window extends Application {
 
             }
         });
-        GridPane.setConstraints(checkExchangeRateButton,2,1);
-
-
 
         //Web View & Engine
         WebView webView = new WebView();
@@ -155,11 +149,6 @@ public class Window extends Application {
 
         displayInfoGridPane.getChildren().addAll(weatherLabel,currencyLabel,currencyTextFiled,checkExchangeRateButton,exchangeRateInfoLabel,NBPExchangeLabel,webView);
         displayInfoScene = new Scene(displayInfoGridPane,650,480);
-
-        primaryStage.setTitle("Chek information for "+service.getCity()+", "+service.getCountryLocale().getDisplayCountry());
-        primaryStage.setMinHeight(480);
-        primaryStage.setMinWidth(650);
-
     }
 
     public void setService(Service service){

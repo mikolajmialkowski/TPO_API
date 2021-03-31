@@ -7,7 +7,6 @@
 package web1;
 import web1.view.Window;
 
-
 public class Main {
   public static void main(String[] args) {
 

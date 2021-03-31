@@ -10,7 +10,6 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import web1.model.CurrencyExchange;
 import web1.model.Weather;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -20,14 +19,13 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
 public class Service {
 
-   private Locale countryLocale;
+   private double NBPrate;
    private String city;
+   private Locale countryLocale;
    private Weather weather;
    private CurrencyExchange currencyExchange;
-   private double NBPrate;
 
     public Locale getCountryLocale() {
         return countryLocale;
@@ -51,10 +49,10 @@ public class Service {
 
     public Service(String countryName) {
         Locale.setDefault(Locale.ENGLISH);
-        for (Locale locale :Locale.getAvailableLocales() ) {
+        for (Locale locale :Locale.getAvailableLocales())
             if (countryName.equals(locale.getDisplayCountry()))
                 this.countryLocale = locale;
-        }
+
         if (this.countryLocale==null)
             countryLocale = new Locale("","United States"); // as default
     }
@@ -75,7 +73,6 @@ public class Service {
         return weatherJSON;
     }
 
-
     public Double getRateFor(String rate1) {
         try {
             String rate1JSON = getJSON(new URL("https://api.exchangeratesapi.io/latest?base=" + rate1 + "&symbols=" +  Currency.getInstance(countryLocale)));
@@ -94,8 +91,6 @@ public class Service {
         }
         return 0d;
     }
-
-
 
     public Double getNBPRate() {
         try {
@@ -123,19 +118,17 @@ public class Service {
     protected synchronized String getJSON(URL url) throws IOException {
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(url.openStream(), StandardCharsets.UTF_8));
         StringBuilder JSONstringBuilder = new StringBuilder();
-        String tmp = bufferedReader.readLine();
-        while (tmp != null) {
-            JSONstringBuilder.append(tmp);
-            tmp= bufferedReader.readLine();
+        String line = bufferedReader.readLine();
+        while (line != null) {
+            JSONstringBuilder.append(line);
+            line = bufferedReader.readLine();
         }
         return JSONstringBuilder.toString();
     }
 
     public static Map<String,Object> JSONToMap(String str) {
-
         Map<String, Object> map = new Gson().fromJson(str, new TypeToken<HashMap<String, Object>>() {
         }.getType());
         return map;
     }
-
 }

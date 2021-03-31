@@ -83,7 +83,6 @@ public class Window extends Application {
                 service.getWeather(cityTextFiled.getText());
                 initializeDisplayInfoScene(primaryStage);
                 primaryStage.setScene(displayInfoScene);
-
             }
         });
 

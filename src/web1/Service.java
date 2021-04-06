@@ -75,7 +75,7 @@ public class Service {
 
     public Double getRateFor(String rate1) {
         try {
-            String rate1JSON = getJSON(new URL("https://api.exchangeratesapi.io/latest?base=" + rate1 + "&symbols=" +  Currency.getInstance(countryLocale)));
+            String rate1JSON = getJSON(new URL("https://api.exchangerate.host/latest?base=" + rate1 + "&symbols=" +  Currency.getInstance(countryLocale)));
             Map<String,Object> JSONmap = JSONToMap(rate1JSON);
             JSONmap.put("reference",Currency.getInstance(countryLocale));
             this.currencyExchange = new CurrencyExchange(JSONmap);

@@ -92,8 +92,8 @@ public class Window extends Application {
 
     public void initializeDisplayInfoScene(Stage primaryStage){
         primaryStage.setTitle("Chek information for "+service.getCity()+", "+service.getCountryLocale().getDisplayCountry());
-        primaryStage.setMinHeight(480);
-        primaryStage.setMinWidth(650);
+        primaryStage.setMinHeight(580);
+        primaryStage.setMinWidth(800);
 
         GridPane displayInfoGridPane = new GridPane();
         displayInfoGridPane.setPadding(new Insets(10,10,10,10));
@@ -107,6 +107,7 @@ public class Window extends Application {
                 service.getWeather().getWeather().get("description")+ ", "+
                 service.getWeather().getMainMap().get("pressure")+"hPa, "+
                 service.getWeather().getWindMap().get("speed")+" m/s");
+
         weatherLabel.setStyle("-fx-font-weight: bold");
         GridPane.setConstraints(weatherLabel,0,0);
 
@@ -140,8 +141,8 @@ public class Window extends Application {
 
         //Web View & Engine
         WebView webView = new WebView();
-        webView.setMaxHeight(300);
-        webView.setMaxWidth(200);
+        webView.setMaxHeight(400);
+        webView.setMaxWidth(400);
         WebEngine webEngine = webView.getEngine();
         GridPane.setConstraints(webView,0,4);
         webEngine.load("https://en.wikipedia.org/wiki/"+this.service.getCity());
